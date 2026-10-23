@@ -271,3 +271,33 @@ function demoPay(propertyId) {
      <a class="btn btn-wa btn-block" target="_blank" rel="noopener" href="${waLink(p)}">Reserve on WhatsApp</a>`);
   m.classList.add('open');
 }
+
+/* ---------- premium motion system ---------- */
+document.documentElement.classList.add('js');
+(function initMotion() {
+  const onScroll = () => { const h = document.querySelector('.site-header'); if (h) h.classList.toggle('scrolled', window.scrollY > 8); };
+  addEventListener('scroll', onScroll, { passive: true });
+  document.addEventListener('click', (e) => {
+    if (e.target.closest('.main-nav a')) { const n = document.querySelector('.main-nav'); if (n) n.classList.remove('open'); }
+  });
+  const SEL = '.amen-card, .svc-card, .faq-item, .gal-grid figure, .calc';
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let io = null;
+  function reveal(el) { el.classList.add('revealed'); }
+  function prep(el) {
+    if (el.dataset.rv) return;
+    el.dataset.rv = '1';
+    el.classList.add('rv');
+    const sibs = [...el.parentElement.children].filter(c => c.matches && c.matches(SEL));
+    el.style.transitionDelay = Math.min(Math.max(sibs.indexOf(el), 0) * 70, 350) + 'ms';
+    if (io) io.observe(el); else reveal(el);
+  }
+  function initReveals() { document.querySelectorAll(SEL).forEach(prep); }
+  window.initReveals = initReveals;
+  if ('IntersectionObserver' in window && !reduced) {
+    io = new IntersectionObserver((es) => es.forEach(en => { if (en.isIntersecting) { reveal(en.target); io.unobserve(en.target); } }), { threshold: 0.1, rootMargin: '0px 0px -24px 0px' });
+  }
+  initReveals();
+  if (document.body) new MutationObserver(() => initReveals()).observe(document.body, { childList: true, subtree: true });
+  setTimeout(() => document.querySelectorAll('.rv:not(.revealed)').forEach(r => { if (r.getBoundingClientRect().top < innerHeight) reveal(r); }), 1600);
+})();

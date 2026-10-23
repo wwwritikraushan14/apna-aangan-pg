@@ -290,3 +290,85 @@ img{max-width:100%}
 #lbPrev{left:12px}#lbNext{right:12px}
 .lb-cap{position:absolute;bottom:16px;left:0;right:0;text-align:center;color:#e9e2cf;font-size:.9rem;padding:0 20px}
 @media (max-width:640px){.gal-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}}
+
+/* === Premium motion system (2026-10-24) === */
+@view-transition{navigation:auto}
+::view-transition-old(root){animation:vtOut .26s ease both}
+::view-transition-new(root){animation:vtIn .32s ease both}
+@keyframes vtOut{to{opacity:0;transform:translateY(-6px)}}
+@keyframes vtIn{from{opacity:0;transform:translateY(10px)}}
+body>section{animation:pageIn .38s ease both}
+@keyframes pageIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+
+/* hero sequence */
+.hero-img{animation:heroImg 1.4s ease both}
+@keyframes heroImg{from{opacity:.35;transform:scale(1.05)}to{opacity:1;transform:scale(1)}}
+.hero .eyebrow{animation:fadeUp .55s .05s ease both}
+.hero h1{animation:fadeUp .6s .14s ease both}
+.hero .lead{animation:fadeUp .6s .24s ease both}
+.hero-search{animation:fadeUp .6s .34s ease both}
+
+/* buttons */
+.btn{position:relative;overflow:hidden;transition:transform .18s ease,background .18s ease,box-shadow .18s ease,border-color .18s ease}
+.btn:hover{transform:translateY(-2px);box-shadow:0 10px 22px rgba(20,60,35,.18)}
+.btn:active{transform:translateY(0) scale(.98);box-shadow:0 3px 10px rgba(20,60,35,.15)}
+.btn:focus-visible{outline:3px solid rgba(194,90,43,.55);outline-offset:2px}
+.btn-primary::after{content:'';position:absolute;top:0;bottom:0;left:-70%;width:45%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.35),transparent);transform:skewX(-18deg);transition:left .6s ease;pointer-events:none}
+.btn-primary:hover::after{left:130%}
+.btn-wa:hover{box-shadow:0 10px 22px rgba(31,170,85,.35)}
+
+/* navbar */
+.site-header{transition:box-shadow .25s ease}
+.site-header.scrolled{box-shadow:0 8px 26px rgba(20,50,30,.13)}
+.main-nav a{position:relative}
+.main-nav a::after{content:'';position:absolute;left:0;bottom:-4px;height:2px;width:100%;background:var(--terra);border-radius:2px;transform:scaleX(0);transform-origin:left;transition:transform .25s ease}
+.main-nav a:hover::after,.main-nav a.active::after{transform:scaleX(1)}
+@media(max-width:860px){.main-nav.open{animation:menuIn .25s ease both}}
+@keyframes menuIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+
+/* cards */
+.prop-card{transition:transform .3s ease,box-shadow .3s ease}
+.prop-card:hover{transform:translateY(-5px);box-shadow:0 20px 38px rgba(20,50,30,.16)}
+.amen-card,.svc-card{transition:transform .25s ease,box-shadow .25s ease}
+.amen-card:hover,.svc-card:hover{transform:translateY(-3px);box-shadow:0 14px 28px rgba(20,50,30,.13)}
+.svc-card img{transition:transform .3s ease}
+.svc-card:hover img{transform:scale(1.14)}
+.gal-grid figure img{transition:transform .45s ease}
+.gal-grid figure:hover img{transform:scale(1.05)}
+
+/* images */
+.ph img,.gallery-main img{animation:imgIn .45s ease both}
+@keyframes imgIn{from{opacity:.2}to{opacity:1}}
+
+/* scroll reveals (JS-gated: content is never hidden without JS) */
+.js .rv{opacity:0;transform:translateY(16px);transition:opacity .55s ease,transform .55s ease}
+.js .rv.revealed{opacity:1;transform:none}
+
+/* forms */
+input,select,textarea{transition:border-color .2s ease,box-shadow .2s ease}
+input:focus,select:focus,textarea:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(20,83,45,.16);outline:none}
+.field.invalid .err{animation:errIn .25s ease}
+@keyframes errIn{from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:none}}
+
+/* modals, lightbox, faq */
+.modal-wrap.open .modal{animation:modalIn .3s ease both}
+@keyframes modalIn{from{opacity:0;transform:translateY(14px) scale(.97)}to{opacity:1;transform:none}}
+.lightbox.open{animation:fadeIn .25s ease}
+.lightbox.open img{animation:lbIn .32s ease both}
+@keyframes lbIn{from{opacity:0;transform:scale(.965)}to{opacity:1;transform:scale(1)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.faq-item.open .faq-a{animation:faqIn .3s ease}
+@keyframes faqIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+
+/* floating contact + footer */
+.wa-float{animation:floatIn .5s .35s ease both;transition:transform .2s ease,box-shadow .2s ease}
+.wa-float:hover{transform:scale(1.07)}
+@keyframes floatIn{from{opacity:0;transform:translateY(12px) scale(.9)}to{opacity:1;transform:none}}
+.site-footer a{transition:color .2s ease}
+.site-footer a:hover{color:var(--saffron)}
+
+@media(prefers-reduced-motion:reduce){
+  ::view-transition-old(root),::view-transition-new(root){animation:none !important}
+  body>section,.hero-img,.hero .eyebrow,.hero h1,.hero .lead,.hero-search,.wa-float{animation:none !important}
+}
