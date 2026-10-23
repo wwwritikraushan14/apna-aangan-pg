@@ -62,9 +62,9 @@ window.AAP_DEMO_DATA = {
         "complaints": "Raise maintenance requests with the manager; resolution target 48 hours."
       },
       "photos": [
-        "images%20-%20Copy/room-single.jpg",
-        "images%20-%20Copy/room-single-2.jpg",
-        "images%20-%20Copy/room-wardrobe-1.jpg"
+        "room-single.jpg",
+        "room-single-2.jpg",
+        "room-wardrobe-1.jpg"
       ],
       "lat": 28.595,
       "lng": 77.052,
@@ -125,12 +125,12 @@ window.AAP_DEMO_DATA = {
         "complaints": "Raise maintenance requests with the manager; resolution target 48 hours."
       },
       "photos": [
-        "images%20-%20Copy/room-double-2.jpg",
-        "images%20-%20Copy/room-double-1.jpg",
-        "images%20-%20Copy/room-double-3.jpg",
-        "images%20-%20Copy/room-spacious.jpg",
-        "images%20-%20Copy/budget-double-1.jpg",
-        "images%20-%20Copy/bathroom-2.jpg"
+        "room-double-2.jpg",
+        "room-double-1.jpg",
+        "room-double-3.jpg",
+        "room-spacious.jpg",
+        "budget-double-1.jpg",
+        "bathroom-2.jpg"
       ],
       "lat": 28.5807,
       "lng": 77.0574,
@@ -192,13 +192,13 @@ window.AAP_DEMO_DATA = {
         "complaints": "Dedicated manager support; resolution target 24–48 hours."
       },
       "photos": [
-        "images%20-%20Copy/studio-double-1.jpg",
-        "images%20-%20Copy/studio-living-1.jpg",
-        "images%20-%20Copy/studio-double-2.jpg",
-        "images%20-%20Copy/studio-double-3.jpg",
-        "images%20-%20Copy/studio-balcony-1.jpg",
-        "images%20-%20Copy/studio-living-2.jpg",
-        "images%20-%20Copy/studio-bathroom-1.jpg"
+        "studio-double-1.jpg",
+        "studio-living-1.jpg",
+        "studio-double-2.jpg",
+        "studio-double-3.jpg",
+        "studio-balcony-1.jpg",
+        "studio-living-2.jpg",
+        "studio-bathroom-1.jpg"
       ],
       "lat": 28.5518,
       "lng": 77.0583,
@@ -257,10 +257,10 @@ window.AAP_DEMO_DATA = {
         "complaints": "Raise maintenance requests with the warden; resolution target 48 hours."
       },
       "photos": [
-        "images%20-%20Copy/room-triple-1.jpg",
-        "images%20-%20Copy/room-triple-2.jpg",
-        "images%20-%20Copy/room-triple-3.jpg",
-        "images%20-%20Copy/room-large-2.jpg"
+        "room-triple-1.jpg",
+        "room-triple-2.jpg",
+        "room-triple-3.jpg",
+        "room-large-2.jpg"
       ],
       "lat": 28.5863,
       "lng": 77.0663,
@@ -320,11 +320,11 @@ window.AAP_DEMO_DATA = {
         "complaints": "Raise maintenance requests with the manager; resolution target 48 hours."
       },
       "photos": [
-        "images%20-%20Copy/budget-single-1.jpg",
-        "images%20-%20Copy/budget-single-4.jpg",
-        "images%20-%20Copy/budget-single-2.jpg",
-        "images%20-%20Copy/budget-single-3.jpg",
-        "images%20-%20Copy/budget-single-5.jpg"
+        "budget-single-1.jpg",
+        "budget-single-4.jpg",
+        "budget-single-2.jpg",
+        "budget-single-3.jpg",
+        "budget-single-5.jpg"
       ],
       "lat": 28.5917,
       "lng": 77.0498,
@@ -387,9 +387,9 @@ window.AAP_DEMO_DATA = {
         "complaints": "Raise maintenance requests with the manager; resolution target 24–48 hours."
       },
       "photos": [
-        "images%20-%20Copy/room-quad-1.jpg",
-        "images%20-%20Copy/room-large-1.jpg",
-        "images%20-%20Copy/bathroom.jpg"
+        "room-quad-1.jpg",
+        "room-large-1.jpg",
+        "bathroom.jpg"
       ],
       "lat": 28.6043,
       "lng": 77.0528,
