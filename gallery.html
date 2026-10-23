@@ -46,7 +46,7 @@ function setCat(k) {
   $('#galCount').textContent = curList.length + ' real photograph' + (curList.length === 1 ? '' : 's') + (k === 'all' ? ' of the property' : ' in this category') + '.';
 }
 function openLb(i) { curIdx = i; showLb(); $('#lightbox').classList.add('open'); }
-function showLb() { const p = curList[curIdx]; $('#lbImg').src = p.src; $('#lbImg').alt = p.alt; $('#lbCap').textContent = p.alt + ' · ' + (curIdx + 1) + ' / ' + curList.length; }
+function showLb() { const p = curList[curIdx]; const im = $('#lbImg'); im.classList.remove('lb-swap'); void im.offsetWidth; im.src = p.src; im.alt = p.alt; im.classList.add('lb-swap'); $('#lbCap').textContent = p.alt + ' · ' + (curIdx + 1) + ' / ' + curList.length; }
 function stepLb(d) { curIdx = (curIdx + d + curList.length) % curList.length; showLb(); }
 $('#lbClose').addEventListener('click', () => $('#lightbox').classList.remove('open'));
 $('#lbPrev').addEventListener('click', () => stepLb(-1));

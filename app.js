@@ -298,6 +298,145 @@ document.documentElement.classList.add('js');
     io = new IntersectionObserver((es) => es.forEach(en => { if (en.isIntersecting) { reveal(en.target); io.unobserve(en.target); } }), { threshold: 0.1, rootMargin: '0px 0px -24px 0px' });
   }
   initReveals();
-  if (document.body) new MutationObserver(() => initReveals()).observe(document.body, { childList: true, subtree: true });
+  if (document.body && window.MutationObserver) new MutationObserver(() => initReveals()).observe(document.body, { childList: true, subtree: true });
   setTimeout(() => document.querySelectorAll('.rv:not(.revealed)').forEach(r => { if (r.getBoundingClientRect().top < innerHeight) reveal(r); }), 1600);
+})();
+
+/* ===== Premium motion system v2 ===== */
+(function initMotion2() {
+  const REDUCED = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const FINE = window.matchMedia && matchMedia('(pointer: fine)').matches;
+
+  /* --- Forest-green page wipe --- */
+  try {
+    if (!REDUCED && sessionStorage.getItem('aap-wipe')) {
+      sessionStorage.removeItem('aap-wipe');
+      const w = document.createElement('div'); w.className = 'wipe wipe-out';
+      document.body.appendChild(w);
+      requestAnimationFrame(() => requestAnimationFrame(() => { w.classList.add('go'); setTimeout(() => w.remove(), 800); }));
+      setTimeout(() => w.remove(), 3500); /* failsafe */
+    }
+  } catch (e) {}
+  window.addEventListener('pageshow', (e) => { if (e.persisted) document.querySelectorAll('.wipe').forEach(w => w.remove()); });
+  document.addEventListener('click', (e) => {
+    if (REDUCED || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    const a = e.target.closest ? e.target.closest('a[href]') : null;
+    if (!a || a.target === '_blank' || a.hasAttribute('download')) return;
+    const href = a.getAttribute('href') || '';
+    if (!href || href.charAt(0) === '#' || /^(https?:|tel:|mailto:|javascript:)/i.test(href)) return;
+    e.preventDefault();
+    try { sessionStorage.setItem('aap-wipe', '1'); } catch (err) {}
+    const w = document.createElement('div'); w.className = 'wipe wipe-in';
+    document.body.appendChild(w);
+    requestAnimationFrame(() => w.classList.add('go'));
+    setTimeout(() => { location.href = href; }, 430);
+  });
+
+  /* --- Cinematic hero: word reveal, CTA stagger, gentle parallax --- */
+  const h1 = document.querySelector('.hero h1');
+  if (h1 && !REDUCED) {
+    const words = h1.textContent.trim().split(/\s+/);
+    h1.innerHTML = words.map((w, i) => '<span class="hw" style="animation-delay:' + (0.2 + i * 0.07).toFixed(2) + 's">' + w + '</span>').join(' ');
+    document.querySelectorAll('.hero .btn').forEach((b, i) => { b.style.animation = 'fadeUp .55s ' + (0.55 + i * 0.1).toFixed(2) + 's cubic-bezier(.22,.8,.3,1) both'; });
+  }
+  const heroImg = document.querySelector('.hero-img');
+  if (heroImg && !REDUCED && FINE) {
+    let tick = false;
+    window.addEventListener('scroll', () => {
+      if (tick) return; tick = true;
+      requestAnimationFrame(() => { heroImg.style.translate = '0 ' + Math.min(window.scrollY, 650) * 0.16 + 'px'; tick = false; });
+    }, { passive: true });
+  }
+
+  /* --- 3D tilt on room cards (desktop pointers) --- */
+  if (FINE && !REDUCED) {
+    let raf = null;
+    document.addEventListener('pointermove', (e) => {
+      const card = e.target.closest ? e.target.closest('.prop-card') : null;
+      document.querySelectorAll('.prop-card.tilting').forEach(c => { if (c !== card) { c.classList.remove('tilting'); c.style.transform = ''; } });
+      if (!card || raf) return;
+      raf = requestAnimationFrame(() => {
+        raf = null;
+        const r = card.getBoundingClientRect();
+        const rx = ((e.clientY - r.top) / r.height - 0.5) * -5;
+        const ry = ((e.clientX - r.left) / r.width - 0.5) * 5;
+        card.classList.add('tilting');
+        card.style.transform = 'perspective(950px) rotateX(' + rx.toFixed(2) + 'deg) rotateY(' + ry.toFixed(2) + 'deg) translateY(-5px)';
+      });
+    });
+    document.addEventListener('pointerout', (e) => {
+      const card = e.target.closest ? e.target.closest('.prop-card') : null;
+      if (card && !card.contains(e.relatedTarget)) { card.classList.remove('tilting'); card.style.transform = ''; }
+    });
+  }
+
+  /* --- Magnetic hero CTA + button ripple --- */
+  if (FINE && !REDUCED) {
+    document.querySelectorAll('.hero .btn-accent').forEach(btn => {
+      btn.addEventListener('pointermove', (e) => {
+        const r = btn.getBoundingClientRect();
+        btn.style.translate = ((e.clientX - r.left) / r.width - 0.5) * 6 + 'px ' + ((e.clientY - r.top) / r.height - 0.5) * 4 + 'px';
+      });
+      btn.addEventListener('pointerleave', () => { btn.style.translate = ''; });
+    });
+  }
+  document.addEventListener('pointerdown', (e) => {
+    if (REDUCED) return;
+    const b = e.target.closest ? e.target.closest('.btn') : null;
+    if (!b) return;
+    const r = b.getBoundingClientRect();
+    const s = document.createElement('span'); s.className = 'ripple';
+    const d = Math.max(r.width, r.height);
+    s.style.width = s.style.height = d + 'px';
+    s.style.left = (e.clientX - r.left - d / 2) + 'px';
+    s.style.top = (e.clientY - r.top - d / 2) + 'px';
+    b.appendChild(s); setTimeout(() => s.remove(), 650);
+  });
+
+  /* --- Scroll progress + back-to-top --- */
+  const prog = document.createElement('div'); prog.className = 'scroll-progress'; document.body.appendChild(prog);
+  const toTop = document.createElement('button'); toTop.className = 'to-top'; toTop.type = 'button'; toTop.textContent = '↑'; toTop.setAttribute('aria-label', 'Back to top');
+  toTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: REDUCED ? 'auto' : 'smooth' }));
+  document.body.appendChild(toTop);
+  let tick2 = false;
+  window.addEventListener('scroll', () => {
+    if (tick2) return; tick2 = true;
+    requestAnimationFrame(() => {
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      prog.style.transform = 'scaleX(' + (max > 0 ? window.scrollY / max : 0) + ')';
+      toTop.classList.toggle('show', window.scrollY > 650);
+      tick2 = false;
+    });
+  }, { passive: true });
+
+  /* --- Modal exit animation (wraps the existing closeModal) --- */
+  const origClose = window.closeModal;
+  if (typeof origClose === 'function') {
+    window.closeModal = function (id) {
+      const m = document.getElementById(id);
+      if (m && m.classList.contains('open') && !REDUCED) {
+        m.classList.add('closing');
+        setTimeout(() => { m.classList.remove('open'); m.classList.remove('closing'); }, 190);
+      } else { origClose(id); }
+    };
+  }
+
+  /* --- Late-boot pieces: nav indicator + footer stagger (chrome is JS-injected) --- */
+  function boot() {
+    const nav = document.querySelector('.main-nav');
+    if (nav && window.innerWidth > 860 && !REDUCED) {
+      document.body.classList.add('has-navind');
+      const ind = document.createElement('span'); ind.className = 'nav-ind'; nav.appendChild(ind);
+      const active = nav.querySelector('a.active');
+      const move = (a) => { if (!a) { ind.style.opacity = '0'; return; } ind.style.opacity = '1'; ind.style.left = a.offsetLeft + 'px'; ind.style.width = a.offsetWidth + 'px'; };
+      move(active);
+      nav.querySelectorAll('a').forEach(a => { a.addEventListener('pointerenter', () => move(a)); a.addEventListener('focus', () => move(a)); });
+      nav.addEventListener('pointerleave', () => move(active));
+    }
+    if (!REDUCED && 'IntersectionObserver' in window) {
+      const fio = new IntersectionObserver(es => es.forEach(en => { if (en.isIntersecting) { en.target.classList.add('revealed'); fio.unobserve(en.target); } }), { threshold: 0.1 });
+      document.querySelectorAll('.site-footer .container > div').forEach((d, i) => { d.classList.add('rv'); d.style.transitionDelay = Math.min(i * 90, 270) + 'ms'; fio.observe(d); });
+    }
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
 })();

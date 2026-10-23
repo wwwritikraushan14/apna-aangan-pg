@@ -372,3 +372,61 @@ input:focus,select:focus,textarea:focus{border-color:var(--green);box-shadow:0 0
   ::view-transition-old(root),::view-transition-new(root){animation:none !important}
   body>section,.hero-img,.hero .eyebrow,.hero h1,.hero .lead,.hero-search,.wa-float{animation:none !important}
 }
+
+/* ============ Premium motion system v2 — cinematic layer ============ */
+/* Forest-green page wipe (JS-driven, multi-page safe) */
+.wipe{position:fixed;inset:0;z-index:1000;pointer-events:none;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#0c2b1a,#14532d);color:#f2ead8;font-family:Fraunces,serif;font-size:clamp(1.3rem,4vw,1.9rem);letter-spacing:.05em;transform:translateX(-102%)}
+.wipe::after{content:'Apna Aangan PG'}
+.wipe-in.go{transition:transform .42s cubic-bezier(.72,0,.18,1);transform:translateX(0)}
+.wipe-out{transform:translateX(0)}
+.wipe-out.go{transition:transform .55s cubic-bezier(.72,0,.18,1) .06s;transform:translateX(102%)}
+/* Cinematic hero: mask reveal + word-by-word heading */
+.hero-img{animation:heroMask 1.05s cubic-bezier(.22,.8,.3,1) both}
+@keyframes heroMask{from{clip-path:inset(0 0 100% 0);transform:scale(1.12)}to{clip-path:inset(0 0 0 0);transform:scale(1.02)}}
+.hero-shade{background:linear-gradient(100deg,rgba(10,35,20,.85),rgba(10,35,20,.45) 55%,rgba(10,35,20,.22));background-size:160% 100%;animation:shadeShift 9s ease-in-out infinite alternate}
+@keyframes shadeShift{from{background-position:0% 0}to{background-position:32% 0}}
+.hero h1{animation:none}
+.hw{display:inline-block;opacity:0;animation:fadeUp .6s cubic-bezier(.22,.8,.3,1) both}
+/* Directional + mask scroll reveals */
+.js .rv{transition:opacity .55s ease,transform .65s cubic-bezier(.22,.8,.3,1),clip-path .65s cubic-bezier(.22,.8,.3,1)}
+.grid>.rv:nth-child(odd){transform:translateX(-24px)}
+.grid>.rv:nth-child(even){transform:translateX(24px)}
+.gal-grid figure.rv{clip-path:inset(16% 10% 16% 10%)}
+.gal-grid figure.rv.revealed{clip-path:inset(0 0 0 0)}
+.js .rv.revealed{transform:none}
+/* Amenity / service icon pop */
+.svc-card{transition:transform .3s ease,box-shadow .3s ease,background-color .35s ease}
+.svc-card:hover{background-color:#faf6ec}
+.svc-card.revealed .ico,.amen-card.revealed .ico{animation:iconPop .5s cubic-bezier(.22,.8,.3,1) both}
+@keyframes iconPop{from{transform:scale(.55) rotate(-10deg);opacity:.3}to{transform:scale(1) rotate(0);opacity:1}}
+/* 3D tilt state (JS pointer-driven, fine pointers only) */
+.prop-card.tilting{transition:transform .1s ease-out;z-index:3;will-change:transform}
+/* Button ripple */
+.ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,.4);transform:scale(0);animation:rip .6s ease-out forwards;pointer-events:none;z-index:1}
+@keyframes rip{to{transform:scale(2.4);opacity:0}}
+/* Scroll progress + back-to-top */
+.scroll-progress{position:fixed;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--terra),var(--saffron));transform-origin:left center;transform:scaleX(0);z-index:130}
+.to-top{position:fixed;right:18px;bottom:92px;width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:#fff;color:var(--green);font-size:1.15rem;cursor:pointer;box-shadow:0 10px 24px rgba(20,50,30,.18);opacity:0;pointer-events:none;transform:translateY(10px);transition:opacity .3s ease,transform .3s ease,background-color .2s ease;z-index:95}
+.to-top.show{opacity:1;pointer-events:auto;transform:none}
+.to-top:hover{background:var(--sand)}
+@media(max-width:767px){.to-top{display:none}}
+/* Sliding nav indicator + compact header */
+.main-nav{position:relative}
+.nav-ind{position:absolute;bottom:-4px;height:3px;border-radius:3px;background:var(--terra);opacity:0;transition:left .32s cubic-bezier(.22,.8,.3,1),width .32s cubic-bezier(.22,.8,.3,1),opacity .2s ease}
+.has-navind .main-nav a::after{display:none}
+.site-header .container{transition:padding .25s ease}
+.site-header.scrolled .container{padding-top:6px;padding-bottom:6px}
+/* Modal exit + image swap motion */
+.modal-wrap.closing{animation:fadeOut .19s ease both}
+.modal-wrap.closing .modal{animation:modalOut .19s ease both}
+@keyframes fadeOut{to{opacity:0}}
+@keyframes modalOut{to{opacity:0;transform:translateY(12px) scale(.97)}}
+.lb-swap{animation:lbSwap .38s ease}
+#gMain img.swap{animation:lbSwap .35s ease}
+@keyframes lbSwap{from{opacity:.1;transform:scale(1.03)}to{opacity:1;transform:scale(1)}}
+@media (prefers-reduced-motion: reduce){
+  .wipe{display:none}.scroll-progress{display:none}
+  .hero-img,.hero-shade{animation:none}
+  .hw{opacity:1;animation:none}
+  .gal-grid figure.rv{clip-path:none}
+}

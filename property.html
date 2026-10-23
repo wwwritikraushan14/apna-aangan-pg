@@ -105,7 +105,7 @@ async function saveProperty(btn) {
   const mainImg = $('#gMain img');
   $('#gMain').addEventListener('click', () => openLightbox(p.photos, parseInt(mainImg.dataset.i || 0)));
   $$('#gThumbs img').forEach(t => t.addEventListener('click', () => {
-    mainImg.src = t.src; mainImg.dataset.i = t.dataset.i;
+    mainImg.classList.remove('swap'); void mainImg.offsetWidth; mainImg.src = t.src; mainImg.dataset.i = t.dataset.i; mainImg.classList.add('swap');
     $$('#gThumbs img').forEach(x => x.classList.toggle('sel', x === t));
   }));
   const mb = $('#mobileBar'); mb.style.display = 'grid';
