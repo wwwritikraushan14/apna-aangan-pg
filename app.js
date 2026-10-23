@@ -80,7 +80,7 @@ function availabilityBadge(p) {
 function propertyCard(p, delay = 0) {
   const topAmen = p.amenities.slice(0, 4);
   return `<article class="prop-card" style="animation-delay:${delay}ms">
-    <div class="ph"><a href="property.html?id=${p.id}"><img loading="lazy" src="${esc(p.photos[0] || '')}" alt="${esc(p.name)} — PG room in ${esc(p.sector)}, Dwarka"></a>
+    <div class="ph">${p.photos && p.photos.length ? `<a href="property.html?id=${p.id}"><img loading="lazy" src="${esc(p.photos[0])}" alt="${esc(p.name)} — PG room in ${esc(p.sector)}, Dwarka"></a>` : `<div class="photo-ph">📷 Property photograph coming soon</div>`}
       ${p.is_demo ? '<span class="badge badge-demo">Demo Listing</span>' : ''}${availabilityBadge(p)}</div>
     <div class="body">
       <h3><a href="property.html?id=${p.id}" style="text-decoration:none;color:inherit">${esc(p.name.replace(/ \(Demo\)$/, ''))}</a></h3>

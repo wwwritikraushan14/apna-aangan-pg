@@ -55,7 +55,7 @@ async function saveProperty(btn) {
   <p class="muted">📍 ${esc(p.locality)} · ${esc(p.address_label)}</p>
   <div class="detail-layout">
     <div>
-      <div class="gallery-main" id="gMain"><img src="${esc(p.photos[0] || '')}" alt="${esc(p.name)} — main photograph"></div>
+      <div class="gallery-main" id="gMain"><img src="${esc(p.photos[0] || '')}" alt="${esc(p.name)} — main photograph" onerror="this.outerHTML='<div class=photo-ph>📷 Property photograph coming soon</div>'"></div>
       <div class="gallery-thumbs" id="gThumbs">${p.photos.map((u, i) => `<img src="${esc(u)}" data-i="${i}" class="${i === 0 ? 'sel' : ''}" alt="${esc(p.name)} photograph ${i + 1}" loading="lazy">`).join('')}</div>
 
       <h2 style="margin-top:34px">About this property</h2>
