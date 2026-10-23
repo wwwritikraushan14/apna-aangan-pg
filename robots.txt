@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://wwwritikraushan14.github.io/apna-aangan-pg/sitemap.xml
