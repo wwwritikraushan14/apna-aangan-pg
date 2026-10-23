@@ -27,6 +27,7 @@ function buildChrome(active) {
       <a href="index.html" class="${active === 'home' ? 'active' : ''}">Home</a>
       <a href="rooms.html" class="${active === 'rooms' ? 'active' : ''}">Rooms in Dwarka</a>
       <a href="pricing.html" class="${active === 'pricing' ? 'active' : ''}">Pricing</a>
+      <a href="gallery.html" class="${active === 'gallery' ? 'active' : ''}">Gallery</a>
       <a href="about.html" class="${active === 'about' ? 'active' : ''}">About Us</a>
       <a href="contact.html" class="${active === 'contact' ? 'active' : ''}">Contact</a>
       <a class="header-call" href="tel:+91${AAP.settings.phone}">📞 ${esc(AAP.settings.phone)}</a>
@@ -59,7 +60,13 @@ function buildChrome(active) {
   document.body.appendChild(footer);
 
   const wa = document.createElement('a');
-  wa.className = 'wa-float'; wa.href = waLink(); wa.target = '_blank'; wa.rel = 'noopener';
+  wa.className = 'wa-float';
+  if (!document.querySelector('.mobile-bar') && !document.getElementById('mobileBar')) {
+    const bar = document.createElement('div');
+    bar.className = 'mobile-bar';
+    bar.innerHTML = `<a href="tel:+91${AAP.settings.phone}">📞 Call</a><a class="wa" href="${waLink()}" target="_blank" rel="noopener">💬 WhatsApp</a><a href="${''}rooms.html">🏠 View Rooms</a>`;
+    document.body.appendChild(bar);
+  } wa.href = waLink(); wa.target = '_blank'; wa.rel = 'noopener';
   wa.setAttribute('aria-label', 'Chat on WhatsApp'); wa.innerHTML = WA_SVG;
   document.body.appendChild(wa);
 }
@@ -252,4 +259,14 @@ async function aapInit(active) {
   }
   buildChrome(active);
   document.title = document.title.replace('Apna Aangan PG', AAP.settings.brand_name);
+}
+
+/* ---------- booking token (demo) ---------- */
+function demoPay(propertyId) {
+  const p = (AAP.properties || []).find(x => x.id === propertyId) || {};
+  const m = modalShell('payModal', 'Online payment — live site only', esc(p.name || 'Apna Aangan PG'),
+    `<p>In this <b>demo</b>, no real payment is taken. On the live website, this button opens secure Razorpay checkout (UPI, cards, netbanking) for a booking token, and the booking is confirmed only after the payment is verified on the server.</p>
+     <p>For now, you can reserve <b>free</b> on WhatsApp:</p>
+     <a class="btn btn-wa btn-block" target="_blank" rel="noopener" href="${waLink(p)}">Reserve on WhatsApp</a>`);
+  m.classList.add('open');
 }

@@ -54,6 +54,25 @@
   </div>
 </section>
 
+
+<section style="padding-bottom:20px">
+  <div class="container">
+    <div class="calc">
+      <h2 style="margin-bottom:6px">Initial Cost Calculator — your first payment</h2>
+      <p class="muted small">Exactly what you pay at move-in, using the selected room's listed charges. The security deposit is <b>refundable</b> — it comes back to you at move-out after any dues are adjusted, as per the refund policy.</p>
+      <div class="field" style="max-width:520px"><label>Choose a room</label><select id="iProp"></select></div>
+      <table class="info" style="margin-top:16px">
+        <tr><td>First month's rent</td><td id="iRent">—</td></tr>
+        <tr><td>Security deposit <span class="pill new">Refundable</span></td><td id="iDeposit">—</td></tr>
+        <tr><td>Food plan — first month</td><td id="iFood">—</td></tr>
+        <tr><td>Maintenance — first month</td><td id="iMaint">—</td></tr>
+        <tr id="iTokenRow" style="display:none"><td>Booking token paid online (adjusted against rent)</td><td id="iToken">—</td></tr>
+      </table>
+      <div class="calc-total" style="margin-top:16px"><span>Estimated initial payment</span><span class="amt" id="iTotal">—</span></div>
+      <p class="small muted" id="iNote" style="margin-top:10px"></p>
+    </div>
+  </div>
+</section>
 <section class="section">
   <div class="container">
     <h2>Compare up to 3 rooms</h2>
@@ -112,6 +131,25 @@ function compare() {
   ['cProp', 'cFood', 'cAc'].forEach(id => $('#' + id).addEventListener('change', calc));
   $$('.cSvc').forEach(c => c.addEventListener('change', calc));
   $('#pricingWa').href = waLink();
+
+  let TOKEN = 0;
+  if (typeof rzpConfig === 'function') { try { TOKEN = (await rzpConfig()).booking_token || 0; } catch {} }
+  function initCalc() {
+    const p = AAP.properties.find(x => x.id === Number($('#iProp').value));
+    if (!p) return;
+    const food = p.food_included ? 0 : (p.food_charge || 0);
+    $('#iRent').textContent = inr(p.rent);
+    $('#iDeposit').textContent = inr(p.deposit);
+    $('#iFood').textContent = p.food_included ? 'Included in rent' : (p.food_charge ? inr(p.food_charge) + ' (optional plan)' : 'Not provided');
+    $('#iMaint').textContent = p.maintenance_charge ? inr(p.maintenance_charge) : 'Included';
+    const total = p.rent + p.deposit + food + (p.maintenance_charge || 0);
+    if (TOKEN > 0) { $('#iTokenRow').style.display = ''; $('#iToken').textContent = '− ' + inr(TOKEN); $('#iTotal').textContent = inr(total - TOKEN) + ' at move-in (+ ' + inr(TOKEN) + ' token online)'; }
+    else { $('#iTotal').textContent = inr(total) + ' at move-in'; }
+    $('#iNote').textContent = 'Of this, ' + inr(p.deposit) + ' is your refundable security deposit. Electricity is ' + (p.electricity.toLowerCase().includes('included') ? 'included up to the fair-use limit stated on the listing.' : 'billed separately on sub-meter reading, so it is not part of this initial payment.');
+  }
+  $('#iProp').innerHTML = opts;
+  $('#iProp').addEventListener('change', initCalc);
+  initCalc();
   calc(); compare();
 })();
 </script>

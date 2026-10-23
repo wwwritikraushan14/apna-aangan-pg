@@ -92,6 +92,7 @@ async function saveProperty(btn) {
       <div style="display:grid;gap:10px;margin-top:14px">
         <button class="btn btn-primary btn-block" onclick="openEnquiry(${p.id})">Check Availability</button>
         <button class="btn btn-accent btn-block" onclick="openVisit(${p.id})">Book a Visit</button>
+        <button class="btn btn-block" style="background:#072654;color:#fff" onclick="demoPay(${p.id})">💳 Pay Booking Token Online</button>
         <a class="btn btn-wa btn-block" target="_blank" rel="noopener" href="${waLink(p)}">Enquire on WhatsApp</a>
         <a class="btn btn-outline btn-block" href="tel:+91${AAP.settings.phone}">Call ${esc(AAP.settings.phone)}</a>
         <button class="btn btn-outline btn-block" onclick="openEnquiry(${p.id}, 'Phone call')">Request a Callback</button>
