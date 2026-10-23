@@ -99,6 +99,7 @@ function propertyCard(p, delay = 0) {
         <button class="btn btn-outline" onclick="openEnquiry(${p.id})">Check Availability</button>
         <a class="btn btn-wa" target="_blank" rel="noopener" href="${waLink(p)}">WhatsApp</a>
       </div>
+      <button class="btn btn-block" style="background:#072654;color:#fff;margin-top:8px" onclick="demoPay(${p.id})">💳 Pay Booking Token</button>
     </div></article>`;
 }
 
