@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rooms & PG Listings in Dwarka — Apna Aangan PG</title>
+<meta name="description" content="Browse furnished PG rooms in Dwarka, New Delhi — filter by sector, rent, occupancy (single, double, triple sharing), boys, girls & co-ed accommodation, AC, meals and Wi-Fi.">
+<meta property="og:title" content="PG Rooms in Dwarka — Apna Aangan PG">
+<meta property="og:description" content="Furnished paying guest accommodation across Dwarka sectors with transparent pricing.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Public+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<section class="section" style="padding:42px 0 20px">
+  <div class="container">
+    <p class="eyebrow">Dwarka Only · New Delhi</p>
+    <h1 style="font-size:clamp(1.8rem,4vw,2.6rem)">Rooms in Dwarka</h1>
+    <p class="muted" style="max-width:640px">Every listing is in Dwarka, New Delhi. Listings marked <strong>Demo</strong> carry demonstration data until verified property details are added — availability is always confirmed personally.</p>
+  </div>
+</section>
+<section style="padding-bottom:70px">
+  <div class="container layout-rooms">
+    <aside class="filters">
+      <h3>Filter Rooms</h3>
+      <div class="group field"><label>Search</label><input id="fSearch" type="search" placeholder="Property name or locality…"></div>
+      <div class="group field"><label>Dwarka Sector</label><select id="fSector"><option value="">All Sectors</option></select></div>
+      <div class="group">
+        <div class="field"><label>Monthly Rent (₹)</label></div>
+        <div style="display:flex;gap:8px">
+          <div class="field" style="flex:1"><input id="fMin" type="number" min="0" placeholder="Min"></div>
+          <div class="field" style="flex:1"><input id="fMax" type="number" min="0" placeholder="Max"></div>
+        </div>
+      </div>
+      <div class="group"><div class="field"><label>Occupancy</label></div>
+        <div class="checks">
+          <label><input type="checkbox" class="f-occ" value="Single Occupancy"> Single Occupancy</label>
+          <label><input type="checkbox" class="f-occ" value="Double Sharing"> Double Sharing</label>
+          <label><input type="checkbox" class="f-occ" value="Triple Sharing"> Triple Sharing</label>
+        </div></div>
+      <div class="group"><div class="field"><label>Accommodation For</label></div>
+        <div class="checks">
+          <label><input type="checkbox" class="f-gender" value="Boys"> Boys</label>
+          <label><input type="checkbox" class="f-gender" value="Girls"> Girls</label>
+          <label><input type="checkbox" class="f-gender" value="Co-ed"> Co-ed</label>
+        </div></div>
+      <div class="group"><div class="field"><label>Must Have</label></div>
+        <div class="checks">
+          <label><input type="checkbox" id="fAvail"> Available rooms only</label>
+          <label><input type="checkbox" id="fAc"> Air conditioning</label>
+          <label><input type="checkbox" id="fBath"> Attached bathroom</label>
+          <label><input type="checkbox" id="fMeals"> Meals included</label>
+          <label><input type="checkbox" id="fWifi"> Wi-Fi</label>
+          <label><input type="checkbox" id="fFurnished"> Furnished</label>
+        </div></div>
+      <button class="btn btn-outline btn-block" id="fReset">Clear All Filters</button>
+    </aside>
+    <div>
+      <div class="toolbar">
+        <strong id="resultCount" class="muted"></strong>
+        <span class="grow"></span>
+        <div class="field" style="min-width:210px"><label>Sort By</label>
+          <select id="fSort">
+            <option value="recommended">Recommended</option>
+            <option value="low">Lowest rent first</option>
+            <option value="high">Highest rent first</option>
+            <option value="new">Recently added</option>
+          </select></div>
+      </div>
+      <div class="grid grid-2" id="roomsGrid"><div class="skeleton"></div><div class="skeleton"></div></div>
+      <div class="empty-state" id="emptyState" style="display:none">
+        <h3>No rooms match those filters</h3>
+        <p class="muted">Try widening the rent range or clearing a filter or two. Or tell us what you need — new rooms open up frequently.</p>
+        <a class="btn btn-wa" id="emptyWa" target="_blank" rel="noopener" href="#">Enquire on WhatsApp</a>
+        <button class="btn btn-outline" onclick="document.getElementById('fReset').click()">Clear Filters</button>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="mobile-bar">
+  <a href="tel:+918292160777">📞 Call</a>
+  <a class="wa" id="mbWa" target="_blank" rel="noopener" href="#">💬 WhatsApp</a>
+  <a href="#" onclick="openVisit();return false;">📅 Book a Visit</a>
+</div>
+<script src="demo-data.js"></script>
+<script src="app.js"></script>
+<script>
+const params = new URLSearchParams(location.search);
+function checkedVals(cls) { return $$(cls).filter(c => c.checked).map(c => c.value); }
+function applyFilters() {
+  const q = $('#fSearch').value.trim().toLowerCase();
+  const sector = $('#fSector').value;
+  const min = parseInt($('#fMin').value) || 0;
+  const max = parseInt($('#fMax').value) || Infinity;
+  const occ = checkedVals('.f-occ'), gender = checkedVals('.f-gender');
+  let list = AAP.properties.filter(p => {
+    if (q && !(p.name + ' ' + p.locality + ' ' + p.sector).toLowerCase().includes(q)) return false;
+    if (sector && p.sector !== sector) return false;
+    if (p.rent < min || p.rent > max) return false;
+    if (occ.length && !occ.includes(p.occupancy)) return false;
+    if (gender.length && !gender.includes(p.gender_policy)) return false;
+    if ($('#fAvail').checked && p.available_rooms <= 0) return false;
+    if ($('#fAc').checked && !p.has_ac) return false;
+    if ($('#fBath').checked && !p.attached_bath) return false;
+    if ($('#fMeals').checked && !p.food_included) return false;
+    if ($('#fWifi').checked && !p.has_wifi) return false;
+    if ($('#fFurnished').checked && !p.furnished) return false;
+    return true;
+  });
+  const sort = $('#fSort').value;
+  if (sort === 'low') list.sort((a, b) => a.rent - b.rent);
+  if (sort === 'high') list.sort((a, b) => b.rent - a.rent);
+  if (sort === 'new') list.sort((a, b) => b.id - a.id);
+  if (sort === 'recommended') list.sort((a, b) => (b.recommended - a.recommended) || (a.rent - b.rent));
+  $('#resultCount').textContent = list.length ? `${list.length} room option${list.length > 1 ? 's' : ''} in Dwarka` : '';
+  $('#roomsGrid').innerHTML = list.map((p, i) => propertyCard(p, i * 60)).join('');
+  $('#emptyState').style.display = list.length ? 'none' : 'block';
+  $('#roomsGrid').style.display = list.length ? 'grid' : 'none';
+}
+(async () => {
+  await aapInit('rooms');
+  const sectors = [...new Set(AAP.properties.map(p => p.sector))].sort();
+  $('#fSector').innerHTML = '<option value="">All Sectors</option>' + sectors.map(s => `<option>${esc(s)}</option>`).join('');
+  if (params.get('sector')) $('#fSector').value = params.get('sector');
+  if (params.get('maxrent')) $('#fMax').value = params.get('maxrent');
+  if (params.get('occupancy')) { const c = $$('.f-occ').find(x => x.value === params.get('occupancy')); if (c) c.checked = true; }
+  if (params.get('gender')) { const c = $$('.f-gender').find(x => x.value === params.get('gender')); if (c) c.checked = true; }
+  $('#emptyWa').href = waLink(); $('#mbWa').href = waLink();
+  ['fSearch', 'fSector', 'fMin', 'fMax', 'fSort'].forEach(id => $('#' + id).addEventListener('input', applyFilters));
+  $$('.f-occ,.f-gender').forEach(c => c.addEventListener('change', applyFilters));
+  ['fAvail', 'fAc', 'fBath', 'fMeals', 'fWifi', 'fFurnished'].forEach(id => $('#' + id).addEventListener('change', applyFilters));
+  $('#fReset').addEventListener('click', () => {
+    $('#fSearch').value = ''; $('#fSector').value = ''; $('#fMin').value = ''; $('#fMax').value = ''; $('#fSort').value = 'recommended';
+    $$('.f-occ,.f-gender').forEach(c => c.checked = false);
+    ['fAvail', 'fAc', 'fBath', 'fMeals', 'fWifi', 'fFurnished'].forEach(id => $('#' + id).checked = false);
+    applyFilters();
+  });
+  applyFilters();
+})();
+</script>
+</body>
+</html>

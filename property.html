@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Property Details — Apna Aangan PG, Dwarka</title>
+<meta name="description" content="Full property details: photos, rent, deposit, amenities, house rules, location and booking actions for this PG in Dwarka, New Delhi.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Public+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<section class="section" style="padding-top:36px">
+  <div class="container" id="detailWrap"><div class="skeleton" style="min-height:420px"></div></div>
+</section>
+<div class="mobile-bar" id="mobileBar" style="display:none">
+  <a id="mbCall" href="#">📞 Call</a>
+  <a class="wa" id="mbWa" target="_blank" rel="noopener" href="#">💬 WhatsApp</a>
+  <a href="#" id="mbVisit">📅 Book a Visit</a>
+</div>
+<script src="demo-data.js"></script>
+<script src="app.js"></script>
+<script>
+let PROP = null;
+async function saveProperty(btn) {
+  const key = 'aap_demo_saved';
+  let saved = [];
+  try { saved = JSON.parse(localStorage.getItem(key) || '[]'); } catch (e) { saved = []; }
+  const has = saved.includes(PROP.id);
+  saved = has ? saved.filter(id => id !== PROP.id) : [...saved, PROP.id];
+  localStorage.setItem(key, JSON.stringify(saved));
+  btn.textContent = has ? '♡ Save on This Device' : '♥ Saved on This Device';
+  toast(has ? 'Removed from this device' : 'Saved on this device (demo)');
+}
+(async () => {
+  await aapInit('rooms');
+  const id = new URLSearchParams(location.search).get('id');
+  const wrap = $('#detailWrap');
+  PROP = AAP.properties.find(p => String(p.id) === String(id));
+  if (!PROP) { wrap.innerHTML = `<div class="empty-state"><h3>Property not found</h3><p class="muted">This listing may have been removed. Browse all rooms in Dwarka instead.</p><a class="btn btn-primary" href="rooms.html">Browse Rooms</a></div>`; return; }
+  const p = PROP;
+  document.title = `${p.name.replace(/ \(Demo\)$/, '')} — PG in ${p.sector}, Dwarka | Apna Aangan PG`;
+  const totalEst = p.rent + (p.food_included ? 0 : p.food_charge) + p.maintenance_charge;
+  const rulesRows = [
+    ['Visitors', p.rules.visitors], ['Curfew', p.rules.curfew], ['Smoking', p.rules.smoking], ['Alcohol', p.rules.alcohol],
+    ['Pets', p.rules.pets], ['Notice Period', p.rules.notice || p.notice_period], ['Minimum Stay', p.min_stay],
+    ['Deposit Refund', p.rules.refund], ['Cancellation', p.rules.cancellation], ['Maintenance Complaints', p.rules.complaints]
+  ].filter(([, v]) => v);
+  wrap.innerHTML = `
+  <p class="small muted"><a href="rooms.html">← All rooms in Dwarka</a> · ${esc(p.sector)}</p>
+  <div style="display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap">
+    <h1 style="font-size:clamp(1.7rem,3.6vw,2.5rem);flex:1;min-width:260px">${esc(p.name.replace(/ \(Demo\)$/, ''))} ${p.is_demo ? '<span class="pill new" style="vertical-align:middle">Demo Listing</span>' : ''}</h1>
+    ${p.available_rooms > 0 ? `<span class="pill ok" style="margin-top:10px">${p.available_rooms} room${p.available_rooms > 1 ? 's' : ''} available</span>` : '<span class="pill" style="margin-top:10px">Currently full — enquire for waitlist</span>'}
+  </div>
+  <p class="muted">📍 ${esc(p.locality)} · ${esc(p.address_label)}</p>
+  <div class="detail-layout">
+    <div>
+      <div class="gallery-main" id="gMain"><img src="${esc(p.photos[0] || '')}" alt="${esc(p.name)} — main photograph"></div>
+      <div class="gallery-thumbs" id="gThumbs">${p.photos.map((u, i) => `<img src="${esc(u)}" data-i="${i}" class="${i === 0 ? 'sel' : ''}" alt="${esc(p.name)} photograph ${i + 1}" loading="lazy">`).join('')}</div>
+
+      <h2 style="margin-top:34px">About this property</h2>
+      <p>${esc(p.description)}</p>
+
+      <h2 style="margin-top:30px">Charges & Stay Terms</h2>
+      <div class="kv">
+        <div><span>Monthly Rent</span><strong>${inr(p.rent)}</strong></div>
+        <div><span>Security Deposit (refundable)</span><strong>${inr(p.deposit)}</strong></div>
+        <div><span>Occupancy</span><strong>${esc(p.occupancy)}</strong></div>
+        <div><span>For</span><strong>${esc(p.gender_policy)}</strong></div>
+        <div><span>Electricity</span><strong>${esc(p.electricity)}</strong></div>
+        <div><span>Maintenance</span><strong>${p.maintenance_charge ? inr(p.maintenance_charge) + ' /month' : 'Included'}</strong></div>
+        <div><span>Food</span><strong>${p.food_included ? 'Included in rent' : (p.food_charge ? inr(p.food_charge) + ' /month (optional plan)' : 'Not provided')}</strong></div>
+        <div><span>Estimated Monthly Total</span><strong>${inr(totalEst)}${p.food_included ? '' : ' (with food plan)'}</strong></div>
+        <div><span>Minimum Stay</span><strong>${esc(p.min_stay)}</strong></div>
+        <div><span>Notice Period</span><strong>${esc(p.notice_period)}</strong></div>
+      </div>
+      <p class="small muted" style="margin-top:10px">Move-in requires a government ID and a photograph; the manager confirms the exact document list before move-in. Electricity is ${esc(p.electricity.toLowerCase())}.</p>
+
+      <h2 style="margin-top:30px">Amenities at this property</h2>
+      <div class="chips" style="gap:8px">${p.amenities.map(a => `<span class="chip" style="padding:6px 13px">✓ ${esc(a)}</span>`).join('') || '<span class="muted">Amenities being updated — please enquire.</span>'}</div>
+
+      <h2 style="margin-top:30px">Location & Connectivity</h2>
+      <p class="muted">${esc(p.locality)}, Dwarka, New Delhi. The map shows the ${esc(p.sector)} area; the exact address is shared when you enquire or book a visit. Dwarka is served by the Blue Line and Airport Express metro corridors — please confirm the exact walking distance to your preferred station during your visit, as it varies by street.</p>
+      <div class="map-frame"><iframe title="Area map — ${esc(p.sector)}, Dwarka" loading="lazy" src="https://www.openstreetmap.org/export/embed.html?bbox=${(p.lng - 0.02).toFixed(4)}%2C${(p.lat - 0.012).toFixed(4)}%2C${(p.lng + 0.02).toFixed(4)}%2C${(p.lat + 0.012).toFixed(4)}&layer=mapnik&marker=${p.lat}%2C${p.lng}"></iframe></div>
+
+      <h2 style="margin-top:30px">Property Rules & Policies</h2>
+      <table class="info">${rulesRows.map(([k, v]) => `<tr><td>${esc(k)}</td><td>${esc(v)}</td></tr>`).join('')}</table>
+    </div>
+    <aside class="sticky-box">
+      <div class="rent">${inr(p.rent)}<small> /month</small></div>
+      <p class="muted small">Deposit ${inr(p.deposit)} (refundable) · ${esc(p.occupancy)} · ${esc(p.gender_policy)}</p>
+      <div style="display:grid;gap:10px;margin-top:14px">
+        <button class="btn btn-primary btn-block" onclick="openEnquiry(${p.id})">Check Availability</button>
+        <button class="btn btn-accent btn-block" onclick="openVisit(${p.id})">Book a Visit</button>
+        <a class="btn btn-wa btn-block" target="_blank" rel="noopener" href="${waLink(p)}">Enquire on WhatsApp</a>
+        <a class="btn btn-outline btn-block" href="tel:+91${AAP.settings.phone}">Call ${esc(AAP.settings.phone)}</a>
+        <button class="btn btn-outline btn-block" onclick="openEnquiry(${p.id}, 'Phone call')">Request a Callback</button>
+        <button class="btn btn-outline btn-block" id="saveBtn" onclick="saveProperty(this)">♡ Save on This Device</button>
+      </div>
+      <p class="small muted" style="margin-top:14px">Submitting an enquiry does not guarantee a reservation. Availability is confirmed personally.</p>
+    </aside>
+  </div>`;
+  try { if ((JSON.parse(localStorage.getItem('aap_demo_saved') || '[]')).includes(p.id)) $('#saveBtn').textContent = '♥ Saved on This Device'; } catch (e) {}
+  const mainImg = $('#gMain img');
+  $('#gMain').addEventListener('click', () => openLightbox(p.photos, parseInt(mainImg.dataset.i || 0)));
+  $$('#gThumbs img').forEach(t => t.addEventListener('click', () => {
+    mainImg.src = t.src; mainImg.dataset.i = t.dataset.i;
+    $$('#gThumbs img').forEach(x => x.classList.toggle('sel', x === t));
+  }));
+  const mb = $('#mobileBar'); mb.style.display = 'grid';
+  $('#mbCall').href = 'tel:+91' + AAP.settings.phone;
+  $('#mbWa').href = waLink(p);
+  $('#mbVisit').addEventListener('click', (e) => { e.preventDefault(); openVisit(p.id); });
+})();
+</script>
+</body>
+</html>

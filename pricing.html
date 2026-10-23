@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pricing & Monthly Expense Calculator — Apna Aangan PG, Dwarka</title>
+<meta name="description" content="Transparent PG pricing in Dwarka: rent, refundable deposit, electricity, food and maintenance explained. Estimate your monthly expense and compare rooms side by side.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Public+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<section class="section" style="padding-bottom:30px">
+  <div class="container">
+    <p class="eyebrow">Transparent Pricing</p>
+    <h1 style="font-size:clamp(1.9rem,4vw,2.7rem)">Know your monthly cost — before you move in</h1>
+    <p class="muted" style="max-width:700px">No hidden charges. Every listing separates one-time charges, refundable deposits, monthly charges, usage-based charges and optional services. Calculator rates below use the selected property's listed charges; add-on service rates are indicative demonstration rates and are confirmed on enquiry.</p>
+    <div class="grid grid-3" style="margin-top:24px">
+      <div class="amen-card"><h3>One-time</h3><p class="muted">Security deposit (refundable) as listed per property. Any booking token is adjusted against rent as per written confirmation.</p></div>
+      <div class="amen-card"><h3>Monthly</h3><p class="muted">Rent + maintenance (where listed) + food plan (if you opt in).</p></div>
+      <div class="amen-card"><h3>Usage-based</h3><p class="muted">Electricity by sub-meter reading, or included up to a fair-use limit — as stated on each listing.</p></div>
+    </div>
+  </div>
+</section>
+
+<section style="padding-bottom:20px">
+  <div class="container">
+    <div class="calc">
+      <h2 style="margin-bottom:6px">Monthly Expense Calculator</h2>
+      <p class="muted small">Pick a room, choose your food plan and add-ons — the estimate updates instantly.</p>
+      <div class="form-grid" style="margin-top:16px">
+        <div class="field"><label>Room / Property</label><select id="cProp"></select></div>
+        <div class="field"><label>Food Plan</label><select id="cFood"><option value="none">No food plan</option><option value="plan">Property food plan</option></select></div>
+      </div>
+      <div class="form-grid" style="margin-top:14px">
+        <div class="field"><label>Air Conditioning</label><select id="cAc"><option value="0">No AC usage estimate</option><option value="800">Moderate AC use (indicative +₹800)</option><option value="1500">Heavy AC use (indicative +₹1,500)</option></select></div>
+        <div class="field"><label>Optional Services</label>
+          <div class="checks" style="margin-top:6px">
+            <label><input type="checkbox" class="cSvc" value="500"> Laundry service (indicative ₹500/mo)</label>
+            <label><input type="checkbox" class="cSvc" value="300"> Parking (indicative ₹300/mo)</label>
+          </div></div>
+      </div>
+      <table class="info" style="margin-top:18px">
+        <tr><td>Monthly rent</td><td id="cRent">—</td></tr>
+        <tr><td>Maintenance</td><td id="cMaint">—</td></tr>
+        <tr><td>Food plan</td><td id="cFoodAmt">—</td></tr>
+        <tr><td>AC / electricity estimate (usage-based)</td><td id="cAcAmt">—</td></tr>
+        <tr><td>Optional services</td><td id="cSvcAmt">—</td></tr>
+        <tr><td>Security deposit (one-time, refundable)</td><td id="cDeposit">—</td></tr>
+      </table>
+      <div class="calc-total" style="margin-top:18px"><span>Estimated monthly expense</span><span class="amt" id="cTotal">—</span></div>
+      <p class="small muted" style="margin-top:12px">Estimates use listed charges for the selected property. Electricity on metered properties is billed on actual reading — the AC figure is an indicative estimate only. Final amounts are confirmed in writing before booking.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <h2>Compare up to 3 rooms</h2>
+    <p class="muted">Tick properties in the listings and compare their real listed charges here.</p>
+    <div class="form-grid" style="grid-template-columns:1fr 1fr 1fr;margin:18px 0" id="cmpPickers">
+      <div class="field"><label>Room 1</label><select class="cmpSel"></select></div>
+      <div class="field"><label>Room 2</label><select class="cmpSel"></select></div>
+      <div class="field"><label>Room 3</label><select class="cmpSel"></select></div>
+    </div>
+    <div style="overflow-x:auto"><table class="compare" id="cmpTable"></table></div>
+    <div class="center" style="margin-top:30px">
+      <button class="btn btn-primary" onclick="openEnquiry()">Send an Enquiry</button>
+      <a class="btn btn-wa" id="pricingWa" target="_blank" rel="noopener" href="#">Ask on WhatsApp</a>
+    </div>
+  </div>
+</section>
+<script src="demo-data.js"></script>
+<script src="app.js"></script>
+<script>
+function calc() {
+  const p = AAP.properties.find(x => x.id === Number($('#cProp').value));
+  if (!p) return;
+  const food = $('#cFood').value === 'plan' ? (p.food_included ? 0 : p.food_charge) : 0;
+  const ac = Number($('#cAc').value);
+  const svc = $$('.cSvc').filter(c => c.checked).reduce((s, c) => s + Number(c.value), 0);
+  $('#cRent').textContent = inr(p.rent);
+  $('#cMaint').textContent = p.maintenance_charge ? inr(p.maintenance_charge) : 'Included';
+  $('#cFoodAmt').textContent = $('#cFood').value === 'plan' ? (p.food_included ? 'Included in rent' : inr(p.food_charge)) : 'Not selected';
+  $('#cAcAmt').textContent = ac ? inr(ac) + ' (estimate)' : (p.electricity.toLowerCase().includes('included') ? 'Included (fair use)' : 'Billed on meter reading');
+  $('#cSvcAmt').textContent = svc ? inr(svc) : 'None';
+  $('#cDeposit').textContent = inr(p.deposit) + ' (one-time)';
+  $('#cTotal').textContent = inr(p.rent + p.maintenance_charge + food + ac + svc) + ' /month';
+}
+function compare() {
+  const picks = $$('.cmpSel').map(s => AAP.properties.find(x => x.id === Number(s.value))).filter(Boolean);
+  const rows = [
+    ['Monthly rent', p => inr(p.rent)],
+    ['Security deposit (refundable)', p => inr(p.deposit)],
+    ['Occupancy', p => p.occupancy],
+    ['For', p => p.gender_policy],
+    ['Sector', p => p.sector],
+    ['Food', p => p.food_included ? 'Included' : (p.food_charge ? inr(p.food_charge) + 'mo optional' : 'Not provided')],
+    ['Maintenance', p => p.maintenance_charge ? inr(p.maintenance_charge) + 'mo' : 'Included'],
+    ['Electricity', p => p.electricity],
+    ['Availability', p => p.available_rooms > 0 ? p.available_rooms + ' available' : 'Currently full'],
+    ['Est. monthly total (rent + maint. + food if opted)', p => inr(p.rent + p.maintenance_charge + (p.food_included ? 0 : p.food_charge))]
+  ];
+  $('#cmpTable').innerHTML = '<tr><th></th>' + picks.map(p => `<th>${esc(p.name.replace(/ \(Demo\)$/, ''))}${p.is_demo ? ' <span class="pill new">Demo</span>' : ''}<br><a class="small" href="property.html?id=${p.id}">View details →</a></th>`).join('') + '</tr>' +
+    rows.map(([label, fn]) => `<tr><td><strong>${label}</strong></td>${picks.map(p => `<td>${esc(fn(p))}</td>`).join('')}</tr>`).join('');
+}
+(async () => {
+  await aapInit('pricing');
+  const opts = AAP.properties.map(p => `<option value="${p.id}">${esc(p.name.replace(/ \(Demo\)$/, ''))} — ${esc(p.sector)} (${inr(p.rent)}/mo)</option>`).join('');
+  $('#cProp').innerHTML = opts;
+  $$('.cmpSel').forEach((s, i) => { s.innerHTML = opts; if (AAP.properties[i]) s.value = AAP.properties[i].id; s.addEventListener('change', compare); });
+  ['cProp', 'cFood', 'cAc'].forEach(id => $('#' + id).addEventListener('change', calc));
+  $$('.cSvc').forEach(c => c.addEventListener('change', calc));
+  $('#pricingWa').href = waLink();
+  calc(); compare();
+})();
+</script>
+</body>
+</html>

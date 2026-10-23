@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contact Us — Apna Aangan PG, Dwarka, New Delhi</title>
+<meta name="description" content="Contact Apna Aangan PG, Dwarka New Delhi — call or WhatsApp 8292160777, send an enquiry, or book a free property visit.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Public+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<section class="section" style="padding-bottom:30px">
+  <div class="container">
+    <p class="eyebrow">Contact Us</p>
+    <h1 style="font-size:clamp(1.9rem,4vw,2.7rem)">Talk to a real person</h1>
+    <div class="grid grid-2" style="align-items:start;margin-top:20px">
+      <div>
+        <div class="panel">
+          <h3>Apna Aangan PG</h3>
+          <table class="info">
+            <tr><td>Location</td><td>Dwarka, New Delhi, India</td></tr>
+            <tr><td>Phone</td><td><a href="tel:+918292160777"><strong>8292160777</strong></a></td></tr>
+            <tr><td>WhatsApp</td><td><a target="_blank" rel="noopener" id="cWa" href="#"><strong>Chat on WhatsApp</strong></a></td></tr>
+            <tr><td>Email</td><td id="cEmail" class="muted">Shared on enquiry — or reach us instantly on WhatsApp.</td></tr>
+            <tr><td>Hours</td><td id="cHours" class="muted">Call or WhatsApp any time; visits by appointment.</td></tr>
+          </table>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px">
+            <a class="btn btn-primary" href="tel:+918292160777">📞 Call Now</a>
+            <a class="btn btn-wa" id="cWa2" target="_blank" rel="noopener" href="#">💬 WhatsApp Us</a>
+            <button class="btn btn-accent" onclick="openVisit()">Book a Visit</button>
+          </div>
+          <p class="small muted" style="margin-top:14px">Property addresses are shared when you enquire or book a visit — each listing page also shows its sector area map.</p>
+        </div>
+      </div>
+      <div class="panel">
+        <h3>Send an enquiry</h3>
+        <p class="muted small">Demo version: this form prepares your enquiry in WhatsApp and does not save it on a server. An enquiry does not guarantee a reservation.</p>
+        <form id="contactForm" novalidate>
+          <div class="form-grid">
+            <div class="field"><label>Full name *</label><input name="name" autocomplete="name"><div class="err">Please enter your full name.</div></div>
+            <div class="field"><label>Mobile number *</label><input name="mobile" inputmode="numeric" autocomplete="tel"><div class="err">Enter a valid 10-digit Indian mobile number.</div></div>
+          </div>
+          <div class="form-grid" style="margin-top:12px">
+            <div class="field"><label>Email (optional)</label><input name="email" type="email"><div class="err">That email does not look right.</div></div>
+            <div class="field"><label>Preferred contact</label><select name="contact_method"><option>WhatsApp</option><option>Phone call</option><option>Email</option></select></div>
+          </div>
+          <div class="field" style="margin-top:12px"><label>Property (optional)</label><select name="property_id" id="cProp"></select></div>
+          <div class="field" style="margin-top:12px"><label>Your message</label><textarea name="requirements" rows="4" placeholder="Tell us your budget, preferred sector, move-in date…"></textarea></div>
+          <div class="form-msg" style="margin-top:14px"></div>
+          <button class="btn btn-primary btn-block" type="submit" style="margin-top:10px">Continue on WhatsApp</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="section alt">
+  <div class="container" style="max-width:820px">
+    <h2 class="center" style="margin-bottom:24px">Frequently asked questions</h2>
+    <div class="faq-item"><button class="faq-q">How fast will you reply?<span>+</span></button><div class="faq-a">Enquiries are reviewed personally — usually within a few working hours. WhatsApp is the fastest channel.</div></div>
+    <div class="faq-item"><button class="faq-q">Can parents enquire on behalf of their child?<span>+</span></button><div class="faq-a">Absolutely — many of our enquiries come from parents. Mention it in your message and we will happily arrange a visit for the family.</div></div>
+    <div class="faq-item"><button class="faq-q">Do you charge brokerage?<span>+</span></button><div class="faq-a">Any applicable charges are stated in writing before booking — there are no hidden fees. Ask us directly and we will itemise everything.</div></div>
+    <div class="faq-item"><button class="faq-q">Where exactly in Dwarka are the rooms?<span>+</span></button><div class="faq-a">Across Dwarka sectors — each listing shows its sector and area map. The exact address is shared when you enquire or book a visit.</div></div>
+  </div>
+</section>
+<div class="mobile-bar">
+  <a href="tel:+918292160777">📞 Call</a>
+  <a class="wa" id="mbWa" target="_blank" rel="noopener" href="#">💬 WhatsApp</a>
+  <a href="#" onclick="openVisit();return false;">📅 Book a Visit</a>
+</div>
+<script src="demo-data.js"></script>
+<script src="app.js"></script>
+<script>
+(async () => {
+  await aapInit('contact');
+  $('#cWa').href = waLink(); $('#cWa2').href = waLink(); $('#mbWa').href = waLink();
+  if (AAP.settings.email) $('#cEmail').innerHTML = `<a href="mailto:${esc(AAP.settings.email)}">${esc(AAP.settings.email)}</a>`;
+  if (AAP.settings.hours) $('#cHours').textContent = AAP.settings.hours;
+  $('#cProp').innerHTML = propOptions('');
+  wireFaq();
+  $('#contactForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const f = e.target, fd = Object.fromEntries(new FormData(f).entries());
+    let ok = true;
+    ok = fieldErr(f.name, f.name.value.trim().length < 2) && ok;
+    ok = fieldErr(f.mobile, !/^[6-9]\d{9}$/.test(f.mobile.value.replace(/\D/g, '').slice(-10))) && ok;
+    ok = fieldErr(f.email, f.email.value && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(f.email.value)) && ok;
+    if (!ok) return;
+    const selected = AAP.properties.find(p => String(p.id) === String(fd.property_id));
+    const lines = [
+      'Hello Apna Aangan PG, I am sending an enquiry from the website demo.',
+      `Name: ${fd.name}`,
+      `Mobile: ${fd.mobile}`,
+      fd.email ? `Email: ${fd.email}` : '',
+      `Property: ${selected ? selected.name.replace(/ \(Demo\)$/, '') + ' — ' + selected.sector : 'General enquiry'}`,
+      fd.requirements ? `Message: ${fd.requirements}` : '',
+      `Preferred contact: ${fd.contact_method || 'WhatsApp'}`
+    ].filter(Boolean);
+    const url = `https://wa.me/${AAP.settings.whatsapp}?text=${encodeURIComponent(lines.join('\n'))}`;
+    $('.form-msg', f).innerHTML = `<div class="form-success">Demo only: WhatsApp is opening with your enquiry ready to send. <a href="${url}" target="_blank" rel="noopener">Tap here if it does not open.</a></div>`;
+    window.open(url, '_blank', 'noopener');
+    toast('Enquiry prepared in WhatsApp');
+  });
+})();
+</script>
+</body>
+</html>
