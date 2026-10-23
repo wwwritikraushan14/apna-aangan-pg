@@ -104,7 +104,7 @@ function calc() {
   $('#cAcAmt').textContent = ac ? inr(ac) + ' (estimate)' : (p.electricity.toLowerCase().includes('included') ? 'Included (fair use)' : 'Billed on meter reading');
   $('#cSvcAmt').textContent = svc ? inr(svc) : 'None';
   $('#cDeposit').textContent = inr(p.deposit) + ' (one-time)';
-  $('#cTotal').textContent = inr(p.rent + p.maintenance_charge + food + ac + svc) + ' /month';
+  { const ct = p.rent + p.maintenance_charge + food + ac + svc; if (window.tweenAmt) tweenAmt($('#cTotal'), ct, v => inr(v) + ' /month'); else $('#cTotal').textContent = inr(ct) + ' /month'; }
 }
 function compare() {
   const picks = $$('.cmpSel').map(s => AAP.properties.find(x => x.id === Number(s.value))).filter(Boolean);
@@ -143,8 +143,8 @@ function compare() {
     $('#iFood').textContent = p.food_included ? 'Included in rent' : (p.food_charge ? inr(p.food_charge) + ' (optional plan)' : 'Not provided');
     $('#iMaint').textContent = p.maintenance_charge ? inr(p.maintenance_charge) : 'Included';
     const total = p.rent + p.deposit + food + (p.maintenance_charge || 0);
-    if (TOKEN > 0) { $('#iTokenRow').style.display = ''; $('#iToken').textContent = '− ' + inr(TOKEN); $('#iTotal').textContent = inr(total - TOKEN) + ' at move-in (+ ' + inr(TOKEN) + ' token online)'; }
-    else { $('#iTotal').textContent = inr(total) + ' at move-in'; }
+    if (TOKEN > 0) { $('#iTokenRow').style.display = ''; $('#iToken').textContent = '− ' + inr(TOKEN); if (window.tweenAmt) tweenAmt($('#iTotal'), total - TOKEN, v => inr(v) + ' at move-in (+ ' + inr(TOKEN) + ' token online)'); else $('#iTotal').textContent = inr(total - TOKEN) + ' at move-in (+ ' + inr(TOKEN) + ' token online)'; }
+    else { if (window.tweenAmt) tweenAmt($('#iTotal'), total, v => inr(v) + ' at move-in'); else $('#iTotal').textContent = inr(total) + ' at move-in'; }
     $('#iNote').textContent = 'Of this, ' + inr(p.deposit) + ' is your refundable security deposit. Electricity is ' + (p.electricity.toLowerCase().includes('included') ? 'included up to the fair-use limit stated on the listing.' : 'billed separately on sub-meter reading, so it is not part of this initial payment.');
   }
   $('#iProp').innerHTML = opts;

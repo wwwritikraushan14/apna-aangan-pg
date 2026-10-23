@@ -46,8 +46,8 @@ function setCat(k) {
   $('#galCount').textContent = curList.length + ' real photograph' + (curList.length === 1 ? '' : 's') + (k === 'all' ? ' of the property' : ' in this category') + '.';
 }
 function openLb(i) { curIdx = i; showLb(); $('#lightbox').classList.add('open'); }
-function showLb() { const p = curList[curIdx]; const im = $('#lbImg'); im.classList.remove('lb-swap'); void im.offsetWidth; im.src = p.src; im.alt = p.alt; im.classList.add('lb-swap'); $('#lbCap').textContent = p.alt + ' · ' + (curIdx + 1) + ' / ' + curList.length; }
-function stepLb(d) { curIdx = (curIdx + d + curList.length) % curList.length; showLb(); }
+function showLb() { const p = curList[curIdx]; const im = $('#lbImg'); im.classList.remove('lb-swap', 'lb-next', 'lb-prev'); void im.offsetWidth; im.src = p.src; im.alt = p.alt; im.classList.add(window.__lbDir ? (window.__lbDir > 0 ? 'lb-next' : 'lb-prev') : 'lb-swap'); window.__lbDir = 0; $('#lbCap').textContent = p.alt + ' · ' + (curIdx + 1) + ' / ' + curList.length; }
+function stepLb(d) { window.__lbDir = d; curIdx = (curIdx + d + curList.length) % curList.length; showLb(); }
 $('#lbClose').addEventListener('click', () => $('#lightbox').classList.remove('open'));
 $('#lbPrev').addEventListener('click', () => stepLb(-1));
 $('#lbNext').addEventListener('click', () => stepLb(1));

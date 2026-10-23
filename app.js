@@ -440,3 +440,111 @@ document.documentElement.classList.add('js');
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
 })();
+
+/* ===== Premium motion system v3 ===== */
+(function initMotion3() {
+  const REDUCED = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const FINE = window.matchMedia && matchMedia('(pointer: fine)').matches;
+
+  /* --- Line-by-line hero headline (measured, masked lines) --- */
+  const h1 = document.querySelector('.hero h1');
+  if (h1 && !REDUCED) {
+    try {
+      const words = h1.textContent.trim().split(/\s+/);
+      h1.innerHTML = words.map(w => '<span class="hword">' + w + '</span>').join(' ');
+      const spans = Array.prototype.slice.call(h1.querySelectorAll('.hword'));
+      const lines = []; let cur = []; let top = null;
+      spans.forEach(s => {
+        if (top === null || Math.abs(s.offsetTop - top) <= 2) { cur.push(s); if (top === null) top = s.offsetTop; }
+        else { lines.push(cur); cur = [s]; top = s.offsetTop; }
+      });
+      if (cur.length) lines.push(cur);
+      if (lines.length && lines.length <= 4) {
+        h1.innerHTML = lines.map((ln, i) => '<span class="hl"><span class="hl-in" style="transition-delay:' + (0.15 + i * 0.13).toFixed(2) + 's">' + ln.map(s => s.textContent).join(' ') + '</span></span>').join(' ');
+        requestAnimationFrame(() => requestAnimationFrame(() => h1.classList.add('play')));
+      }
+    } catch (e) { /* v2 word cascade remains as the fallback */ }
+  }
+
+  /* --- Auto-tagged reveals for sections that were still static --- */
+  const SEL3 = '.trust-item, .section h2, .calc, .price-table, .svc-feature, .form-grid, .grid-2 > div';
+  const tagged = [];
+  document.querySelectorAll(SEL3).forEach(el => {
+    if (el.classList.contains('rv')) return;
+    el.classList.add('rv'); if (el.tagName === 'H2') el.classList.add('rvh');
+    el.style.transitionDelay = Math.min(tagged.length % 4, 3) * 70 + 'ms';
+    tagged.push(el);
+  });
+  if (tagged.length) {
+    if ('IntersectionObserver' in window && !REDUCED) {
+      const io = new IntersectionObserver(es => es.forEach(en => { if (en.isIntersecting) { en.target.classList.add('revealed'); io.unobserve(en.target); } }), { threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
+      tagged.forEach(el => io.observe(el));
+      setTimeout(() => tagged.forEach(el => { const r = el.getBoundingClientRect(); if (r.top < innerHeight && r.bottom > 0) el.classList.add('revealed'); }), 1800);
+    } else tagged.forEach(el => el.classList.add('revealed'));
+  }
+
+  /* --- Inner-page header choreography (every page except the homepage hero) --- */
+  if (!document.querySelector('.hero')) {
+    const c = document.querySelector('section .container');
+    if (c) c.classList.add('ph-in');
+  }
+
+  /* --- Scroll-linked parallax for editorial photographs --- */
+  if (FINE && !REDUCED) {
+    const targets = Array.prototype.slice.call(document.querySelectorAll('section img')).filter(img =>
+      !img.closest('.prop-card, .gal-grid, .gallery-main, .gallery-thumbs, .hero, .fic, .trust-item, .svc-feature') && (img.getAttribute('src') || '').indexOf('icons') === -1);
+    targets.forEach(img => img.classList.add('plx'));
+    if (targets.length) {
+      let tick = false;
+      window.addEventListener('scroll', () => {
+        if (tick) return; tick = true;
+        requestAnimationFrame(() => {
+          targets.forEach(img => {
+            const r = img.getBoundingClientRect();
+            if (r.bottom < -80 || r.top > innerHeight + 80) return;
+            let off = (r.top + r.height / 2 - innerHeight / 2) * -0.05;
+            off = Math.max(-26, Math.min(26, off));
+            img.style.translate = '0 ' + off.toFixed(1) + 'px';
+          });
+          tick = false;
+        });
+      }, { passive: true });
+    }
+  }
+
+  /* --- Smart header + card spotlight position --- */
+  let lastY = window.scrollY || 0;
+  window.addEventListener('scroll', () => {
+    const y = window.scrollY || 0;
+    const hdr = document.querySelector('.site-header');
+    if (hdr && !REDUCED) {
+      const navOpen = document.querySelector('.main-nav.open');
+      if (y > 340 && y > lastY + 4 && !navOpen) hdr.classList.add('hdr-hide');
+      else if (y < lastY - 4 || y <= 340) hdr.classList.remove('hdr-hide');
+    }
+    lastY = y;
+  }, { passive: true });
+  if (FINE) {
+    document.addEventListener('pointermove', (e) => {
+      const card = e.target.closest ? e.target.closest('.prop-card') : null;
+      if (!card) return;
+      const r = card.getBoundingClientRect();
+      card.style.setProperty('--mx', ((e.clientX - r.left) / r.width * 100).toFixed(1) + '%');
+      card.style.setProperty('--my', ((e.clientY - r.top) / r.height * 100).toFixed(1) + '%');
+    });
+  }
+
+  /* --- Animated amount tween (used by the pricing calculators) --- */
+  window.tweenAmt = function (el, to, fmt) {
+    if (!el) return;
+    const from = typeof el._amt === 'number' ? el._amt : 0;
+    el._amt = to;
+    if (REDUCED || !window.requestAnimationFrame || from === to) { el.textContent = fmt(to); return; }
+    const t0 = performance.now(), dur = 450;
+    (function step(t) {
+      const k = Math.min(1, (t - t0) / dur), e2 = 1 - Math.pow(1 - k, 3);
+      el.textContent = fmt(Math.round(from + (to - from) * e2));
+      if (k < 1 && el._amt === to) requestAnimationFrame(step);
+    })(t0);
+  };
+})();
