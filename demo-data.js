@@ -127,11 +127,11 @@ window.AAP_DEMO_DATA = {
         "complaints": "Raise maintenance requests with the manager; resolution target 48 hours."
       },
       "photos": [
-        "images/room-double-2.jpg",
-        "images/room-double-1.jpg",
-        "images/room-single.jpg",
-        "images/room-spacious.jpg",
-        "images/bathroom.jpg"
+        "images%20-%20Copy/room-double-2.jpg",
+        "images%20-%20Copy/room-double-1.jpg",
+        "images%20-%20Copy/room-single.jpg",
+        "images%20-%20Copy/room-spacious.jpg",
+        "images%20-%20Copy/bathroom.jpg"
       ],
       "lat": 28.5807,
       "lng": 77.0574,
